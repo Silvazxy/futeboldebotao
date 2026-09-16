@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Futebol de Botões</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="rotate-prompt">
+  <div class="rotate-icon">📱</div>
+  <div class="menu-title" style="font-size:18px;">GIRE SEU CELULAR</div>
+  <p>Este jogo é jogado na horizontal. Vire o aparelho para começar a partida.</p>
+</div>
+
+<div class="cabinet">
+  <h1>⚽ FUTEBOL DE BOTÕES</h1>
+  <div class="sub">EDIÇÃO DE MESA</div>
+
+  <div class="scoreboard">
+    <div class="score-panel" id="panelLeft" style="--panel-color:#8f2a2a;">
+      <span class="team-tag">VERMELHO</span>
+      <span class="score-digits" id="scoreLeftDigits">0</span>
+    </div>
+    <div class="clock-panel"><span id="hudTime">2:00</span></div>
+    <div class="score-panel right" id="panelRight" style="--panel-color:#204d7c;">
+      <span class="score-digits" id="scoreRightDigits">0</span>
+      <span class="team-tag">AZUL</span>
+    </div>
+  </div>
+
+  <div class="field-frame">
+    <div class="canvas-wrap">
+      <canvas id="gameCanvas" width="860" height="440"></canvas>
+
+      <div class="goal-flash" id="goalFlash">GOOOOL!</div>
+
+      <div class="touch-controls" id="touchControls">
+        <div class="pad p1" id="padP1">
+          <div class="pad-btn pad-up" data-dir="up">▲</div>
+          <div class="pad-btn pad-left" data-dir="left">◀</div>
+          <div class="pad-btn pad-right" data-dir="right">▶</div>
+          <div class="pad-btn pad-down" data-dir="down">▼</div>
+        </div>
+        <div class="kick-btn p1" id="kickP1">CHUTE</div>
+        <div class="kick-btn p2 hidden" id="kickP2">CHUTE</div>
+        <div class="pad p2 hidden" id="padP2">
+          <div class="pad-btn pad-up" data-dir="up">▲</div>
+          <div class="pad-btn pad-left" data-dir="left">◀</div>
+          <div class="pad-btn pad-right" data-dir="right">▶</div>
+          <div class="pad-btn pad-down" data-dir="down">▼</div>
+        </div>
+      </div>
+
+      <div class="overlay" id="menuOverlay">
+        <div class="menu-title">ESCOLHA O MODO</div>
+        <div class="menu-desc">Marque mais gols que o adversário até o tempo acabar. Chegue perto da bola e use o botão/tecla de chute para bater — encostar sem chutar dá só um toque leve.</div>
+
+        <div class="customize">
+          <div class="custom-col">
+            <div class="custom-label" style="color:#e88;">TIME VERMELHO</div>
+            <canvas class="preview-disc" id="preview1" width="46" height="46"></canvas>
+            <div class="swatches" id="swatches1"></div>
+            <div class="patterns" id="patterns1"></div>
+          </div>
+          <div class="custom-col">
+            <div class="custom-label" style="color:#8ac;">TIME AZUL</div>
+            <canvas class="preview-disc" id="preview2" width="46" height="46"></canvas>
+            <div class="swatches" id="swatches2"></div>
+            <div class="patterns" id="patterns2"></div>
+          </div>
+        </div>
+
+        <div class="mode-row">
+          <button class="mode-btn" id="btn2p">
+            2 JOGADORES
+            <span class="small">Mesmo teclado — WASD+Espaço vs Setas+Enter</span>
+          </button>
+          <button class="mode-btn blue" id="btn1p">
+            VS MÁQUINA
+            <span class="small">WASD + Espaço contra a CPU</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="endOverlay">
+        <div class="menu-title" id="endTitle">FIM DE JOGO</div>
+        <div class="menu-desc" id="endDesc"></div>
+        <button class="mode-btn" id="btnMenu" style="max-width:220px;">VOLTAR AO MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-controls">
+    <span>🔴 P1: WASD + Espaço (chute)</span>
+    <span id="p2label">🔵 P2: Setas + Enter (chute)</span>
+    <span>ESC: pausar</span>
+  </div>
+</div>
+
+ <script src="script.js"></script>
+</body>
+</html>
