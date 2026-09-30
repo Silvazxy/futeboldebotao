@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Futebol de Botões</title>
-<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 <div class="rotate-prompt">
@@ -36,20 +36,10 @@
       <div class="goal-flash" id="goalFlash">GOOOOL!</div>
 
       <div class="touch-controls" id="touchControls">
-        <div class="pad p1" id="padP1">
-          <div class="pad-btn pad-up" data-dir="up">▲</div>
-          <div class="pad-btn pad-left" data-dir="left">◀</div>
-          <div class="pad-btn pad-right" data-dir="right">▶</div>
-          <div class="pad-btn pad-down" data-dir="down">▼</div>
-        </div>
+        <div class="joystick p1" id="joyP1"><div class="joy-knob" id="knobP1"></div></div>
         <div class="kick-btn p1" id="kickP1">CHUTE</div>
         <div class="kick-btn p2 hidden" id="kickP2">CHUTE</div>
-        <div class="pad p2 hidden" id="padP2">
-          <div class="pad-btn pad-up" data-dir="up">▲</div>
-          <div class="pad-btn pad-left" data-dir="left">◀</div>
-          <div class="pad-btn pad-right" data-dir="right">▶</div>
-          <div class="pad-btn pad-down" data-dir="down">▼</div>
-        </div>
+        <div class="joystick p2 hidden" id="joyP2"><div class="joy-knob" id="knobP2"></div></div>
       </div>
 
       <div class="overlay" id="menuOverlay">
@@ -98,6 +88,5 @@
   </div>
 </div>
 
- <script src="script.js"></script>
 </body>
 </html>
