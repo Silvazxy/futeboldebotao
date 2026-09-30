@@ -12,7 +12,7 @@
   const p2label = document.getElementById('p2label');
   const panelLeft = document.getElementById('panelLeft');
   const panelRight = document.getElementById('panelRight');
-  const padP2 = document.getElementById('padP2');
+  const joyP2 = document.getElementById('joyP2');
   const kickP2 = document.getElementById('kickP2');
 
   const GOAL_TOP = H/2 - 65;
@@ -33,8 +33,8 @@
 
   /* ---------- Unified input (keyboard + touch) ---------- */
   const input = {
-    p1:{up:false,down:false,left:false,right:false,kickReq:false},
-    p2:{up:false,down:false,left:false,right:false,kickReq:false}
+    p1:{up:false,down:false,left:false,right:false,kickReq:false,touchVec:{x:0,y:0}},
+    p2:{up:false,down:false,left:false,right:false,kickReq:false,touchVec:{x:0,y:0}}
   };
 
   window.addEventListener('keydown', e=>{
@@ -66,18 +66,60 @@
     }
   });
 
-  function wireTouchPad(padEl, player){
-    padEl.querySelectorAll('.pad-btn').forEach(btn=>{
-      const dir = btn.dataset.dir;
-      const on = ev=>{ ev.preventDefault(); input[player][dir] = true; btn.classList.add('active'); };
-      const off = ev=>{ if(ev) ev.preventDefault(); input[player][dir] = false; btn.classList.remove('active'); };
-      btn.addEventListener('touchstart', on, {passive:false});
-      btn.addEventListener('touchend', off, {passive:false});
-      btn.addEventListener('touchcancel', off, {passive:false});
-      btn.addEventListener('pointerdown', on);
-      btn.addEventListener('pointerup', off);
-      btn.addEventListener('pointerleave', off);
-    });
+  function wireJoystick(joyEl, knobEl, player){
+    let active = false;
+    let touchId = null;
+
+    function getPoint(ev){
+      if(ev.changedTouches && ev.changedTouches.length){
+        for(const t of ev.touches.length ? ev.touches : ev.changedTouches){
+          if(touchId === null || t.identifier === touchId) return t;
+        }
+        return ev.changedTouches[0];
+      }
+      return ev;
+    }
+
+    function start(ev){
+      ev.preventDefault();
+      active = true;
+      const p = ev.changedTouches ? ev.changedTouches[0] : ev;
+      touchId = ev.changedTouches ? p.identifier : 'mouse';
+      updateFromPoint(p);
+    }
+    function moveHandler(ev){
+      if(!active) return;
+      ev.preventDefault();
+      updateFromPoint(getPoint(ev));
+    }
+    function updateFromPoint(p){
+      const rect = joyEl.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+      const maxR = rect.width/2 * 0.85;
+      let dx = p.clientX - cx, dy = p.clientY - cy;
+      const dist = Math.hypot(dx,dy);
+      if(dist > maxR){ dx = dx/dist*maxR; dy = dy/dist*maxR; }
+      knobEl.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+      input[player].touchVec.x = dx / maxR;
+      input[player].touchVec.y = dy / maxR;
+    }
+    function end(ev){
+      if(ev) ev.preventDefault();
+      active = false;
+      touchId = null;
+      knobEl.style.transform = 'translate(-50%,-50%)';
+      input[player].touchVec.x = 0;
+      input[player].touchVec.y = 0;
+    }
+
+    joyEl.addEventListener('touchstart', start, {passive:false});
+    joyEl.addEventListener('touchmove', moveHandler, {passive:false});
+    joyEl.addEventListener('touchend', end, {passive:false});
+    joyEl.addEventListener('touchcancel', end, {passive:false});
+    joyEl.addEventListener('pointerdown', start);
+    window.addEventListener('pointermove', ev=>{ if(active && touchId==='mouse') moveHandler(ev); });
+    window.addEventListener('pointerup', ev=>{ if(active && touchId==='mouse') end(ev); });
   }
   function wireTouchKick(btnEl, player){
     const trigger = ev=>{
@@ -89,8 +131,8 @@
     btnEl.addEventListener('touchstart', trigger, {passive:false});
     btnEl.addEventListener('pointerdown', trigger);
   }
-  wireTouchPad(document.getElementById('padP1'), 'p1');
-  wireTouchPad(padP2, 'p2');
+  wireJoystick(document.getElementById('joyP1'), document.getElementById('knobP1'), 'p1');
+  wireJoystick(joyP2, document.getElementById('knobP2'), 'p2');
   wireTouchKick(document.getElementById('kickP1'), 'p1');
   wireTouchKick(kickP2, 'p2');
 
@@ -266,11 +308,11 @@
     tryLockLandscape();
     if(mode === '1p'){
       p2label.textContent = '🔵 CPU';
-      padP2.classList.add('hidden');
+      joyP2.classList.add('hidden');
       kickP2.classList.add('hidden');
     } else {
       p2label.textContent = '🔵 P2: Setas + Enter (chute)';
-      padP2.classList.remove('hidden');
+      joyP2.classList.remove('hidden');
       kickP2.classList.remove('hidden');
     }
     panelLeft.style.setProperty('--panel-color', shade(custom[1].color,-0.35));
@@ -537,6 +579,9 @@
       if(input.p1.right) ax1 += 1;
       if(input.p1.up) ay1 -= 1;
       if(input.p1.down) ay1 += 1;
+      if(Math.hypot(input.p1.touchVec.x, input.p1.touchVec.y) > 0.08){
+        ax1 = input.p1.touchVec.x; ay1 = input.p1.touchVec.y;
+      }
       moveDisc(p1, ax1, ay1);
       if(input.p1.kickReq){ tryKick(p1, p1Kick); input.p1.kickReq = false; }
 
@@ -546,6 +591,9 @@
         if(input.p2.right) ax2 += 1;
         if(input.p2.up) ay2 -= 1;
         if(input.p2.down) ay2 += 1;
+        if(Math.hypot(input.p2.touchVec.x, input.p2.touchVec.y) > 0.08){
+          ax2 = input.p2.touchVec.x; ay2 = input.p2.touchVec.y;
+        }
         moveDisc(p2, ax2, ay2);
         if(input.p2.kickReq){ tryKick(p2, p2Kick); input.p2.kickReq = false; }
       } else {
